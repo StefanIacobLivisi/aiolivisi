@@ -60,9 +60,10 @@ class AioLivisi:
         except Exception as error:
             if len(access_data) == 0:
                 raise IncorrectIpAddressException from error
-            if access_data["errorcode"] == 2009:
+            elif access_data["errorcode"] == 2009:
                 raise WrongCredentialException from error
-            raise ShcUnreachableException from error
+            else:
+                raise ShcUnreachableException from error
 
     async def async_send_authorized_request(
         self,
