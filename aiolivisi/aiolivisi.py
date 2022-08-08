@@ -168,7 +168,6 @@ class AioLivisi:
         try:
             return await self.async_send_authorized_request("get", websession, url)
         except Exception as error:
-            Logger.error("There was an error getting the PSS state %s", error)
             return
 
     async def async_pss_set_state(self, websession, capability_id, is_on: bool):

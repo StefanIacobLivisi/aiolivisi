@@ -1,6 +1,5 @@
 """Code for communication with the Livisi application websocket."""
 import asyncio
-from logging import Logger
 from typing import Callable
 import urllib.parse
 
@@ -44,7 +43,6 @@ class Websocket:
                     self._websocket = websocket
                     await self.consumer_handler(websocket, on_data)
                 except websockets.ConnectionClosed:
-                    Logger.info("The websocket connection was closed")
                     await on_close()
                     return
         except asyncio.exceptions.TimeoutError:
