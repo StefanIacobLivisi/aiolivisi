@@ -1,3 +1,4 @@
 aiohttp
 socketio
 websockets==10.1
+setuptools==57.4.0
