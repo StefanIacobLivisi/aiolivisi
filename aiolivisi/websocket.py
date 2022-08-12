@@ -41,7 +41,7 @@ class Websocket:
                 try:
                     self._websocket = websocket
                     await self.consumer_handler(websocket, on_data)
-                except websockets.ConnectionClosed:
+                except Exception:
                     await on_close()
                     return
         except Exception:
