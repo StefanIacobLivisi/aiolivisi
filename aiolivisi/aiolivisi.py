@@ -1,5 +1,4 @@
 """Code to handle the communication with Livisi Smart home controllers."""
-from logging import Logger
 from typing import Any
 import uuid
 
@@ -13,6 +12,7 @@ from .const import (
     AUTH_USERNAME,
     AUTHENTICATION_HEADERS,
     CLASSIC_PORT,
+    REQUEST_TIMEOUT,
     USERNAME,
 )
 
@@ -24,8 +24,9 @@ class AioLivisi:
 
     instance = None
 
-    def __init__(self, auth_headers: dict[str, Any] = None) -> None:
-        self._auth_headers = auth_headers
+    def __init__(self, web_session:ClientSession = None, auth_headers: dict[str, Any] = None) -> None:
+        self._web_session: ClientSession = web_session
+        self._auth_headers: dict[str, Any] = auth_headers
         self._token: str = ""
         self._livisi_connection_data: dict[str, str] = None
         if AioLivisi.instance is not None:
@@ -41,16 +42,14 @@ class AioLivisi:
         return AioLivisi.instance
 
     async def async_set_token(
-        self, web_session, livisi_connection_data: dict[str, str] = None
+        self, livisi_connection_data: dict[str, str] = None
     ):
         """Set the JWT from the LIVISI Smart Home Controller."""
         access_data: dict = {}
         try:
             if self._livisi_connection_data is not None:
                 self._livisi_connection_data = livisi_connection_data
-            access_data = await self.async_get_jwt_token(
-                web_session, livisi_connection_data
-            )
+            access_data = await self.async_get_jwt_token(livisi_connection_data)
             self.token = access_data["access_token"]
             self._auth_headers = {
                 "authorization": f"Bearer {self.token}",
@@ -68,7 +67,6 @@ class AioLivisi:
     async def async_send_authorized_request(
         self,
         method,
-        web_session: ClientSession,
         url: str,
         payload=None,
     ) -> dict:
@@ -76,22 +74,21 @@ class AioLivisi:
         ip_address = self._livisi_connection_data["ip_address"]
         path = f"http://{ip_address}:{CLASSIC_PORT}/{url}"
         return await self.async_send_request(
-            method, web_session, path, payload, self._auth_headers
+            method, path, payload, self._auth_headers
         )
 
     async def async_send_unauthorized_request(
         self,
         method,
-        web_session: ClientSession,
         url: str,
         headers,
         payload=None,
     ):
         """Send a request without JWT token."""
-        return await self.async_send_request(method, web_session, url, payload, headers)
+        return await self.async_send_request(method, url, payload, headers)
 
     async def async_get_jwt_token(
-        self, web_session, livisi_connection_data: dict[str, str]
+        self, livisi_connection_data: dict[str, str]
     ):
         """Send a request for getting the JWT token."""
         login_credentials = {
@@ -104,73 +101,67 @@ class AioLivisi:
         ip_address = self._livisi_connection_data["ip_address"]
         return await self.async_send_request(
             "post",
-            web_session,
             url=f"http://{ip_address}:{CLASSIC_PORT}/auth/token",
             payload=login_credentials,
             headers=headers,
         )
 
     async def async_send_request(
-        self, method, web_session: ClientSession, url: str, payload=None, headers=None
+        self, method, url: str, payload=None, headers=None
     ) -> dict:
         """Send a request to the Livisi Smart Home controller."""
         try:
             response = await self.__async_send_request(
-                method, web_session, url, payload, headers
+                method, url, payload, headers
             )
             if "errorcode" in response:
                 if response["errorcode"] == 2007:
-                    await self.async_set_token(web_session)
+                    await self.async_set_token()
             return response
         except Exception:
             return await self.__async_send_request(
-                method, web_session, url, payload, headers
+                method, url, payload, headers
             )
 
     async def __async_send_request(
-        self, method, web_session: ClientSession, url: str, payload=None, headers=None
+        self, method, url: str, payload=None, headers=None
     ) -> dict:
-        async with web_session.request(
-            method, url, json=payload, headers=headers, ssl=False, timeout=2000
+        async with self._web_session.request(
+            method, url, json=payload, headers=headers, ssl=False, timeout=REQUEST_TIMEOUT
         ) as res:
             data = await res.json()
             return data
 
     async def async_get_controller(
-        self,
-        websession,
+        self
     ) -> dict[str, Any]:
         """Get Livisi Smart Home controller data."""
-        return await self.async_get_controller_status(
-            websession,
-        )
+        return await self.async_get_controller_status()
 
     async def async_get_controller_status(
-        self,
-        websession,
+        self
     ) -> dict[str, Any]:
         """Get Livisi Smart Home controller status."""
         shc_info = await self.async_send_authorized_request(
-            "get", websession, url="status"
+            "get", url="status"
         )
         return shc_info
 
     async def async_get_devices(
         self,
-        websession,
     ):
         """Send a request for getting the devices."""
-        return await self.async_send_authorized_request("get", websession, url="device")
+        return await self.async_send_authorized_request("get", url="device")
 
-    async def async_get_pss_state(self, websession, capability):
+    async def async_get_pss_state(self, capability):
         """Get the state of the PSS device."""
         url = f"{capability}/state"
         try:
-            return await self.async_send_authorized_request("get", websession, url)
+            return await self.async_send_authorized_request("get", url)
         except Exception as error:
             return
 
-    async def async_pss_set_state(self, websession, capability_id, is_on: bool):
+    async def async_pss_set_state(self, capability_id, is_on: bool):
         """Set the PSS state."""
         set_state_payload: dict[str, Any] = {
             "id": uuid.uuid4().hex,
@@ -180,17 +171,17 @@ class AioLivisi:
             "params": {"onState": {"type": "Constant", "value": is_on}},
         }
         return await self.async_send_authorized_request(
-            "post", websession, "action", payload=set_state_payload
+            "post", "action", payload=set_state_payload
         )
 
-    async def async_get_all_rooms(self, websession):
+    async def async_get_all_rooms(self):
         """Get all the rooms from LIVISI configuration."""
 
-        return await self.async_send_authorized_request("get", websession, "location")
+        return await self.async_send_authorized_request("get", "location")
 
     @property
     def livisi_connection_data(self):
-        """Return the log in headers"""
+        """Return the connection data."""
         return self._livisi_connection_data
 
     @livisi_connection_data.setter
@@ -199,9 +190,18 @@ class AioLivisi:
 
     @property
     def token(self):
-        """Return the log in headers"""
+        """Return the token."""
         return self._token
 
     @token.setter
     def token(self, new_value):
         self._token = new_value
+
+    @property
+    def web_session(self):
+        """Return the web session."""
+        return self._web_session
+
+    @web_session.setter
+    def web_session(self, new_value):
+        self._web_session = new_value

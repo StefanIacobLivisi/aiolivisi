@@ -1,3 +1,2 @@
 aiohttp
-socketio
 websockets==10.1

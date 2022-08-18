@@ -8,6 +8,7 @@ USERNAME: Final = "admin"
 AUTH_USERNAME: Final = "username"
 AUTH_PASSWORD: Final = "password"
 AUTH_GRANT_TYPE: Final = "grant_type"
+REQUEST_TIMEOUT: Final = 2000
 
 AUTHENTICATION_HEADERS: Final = {
     "Authorization": "Basic Y2xpZW50SWQ6Y2xpZW50UGFzcw==",
