@@ -5,29 +5,19 @@ import urllib.parse
 import websockets
 from pydantic import ValidationError
 
-from aiolivisi.event_data import EventData
+from aiolivisi.livisi_event import LivisiEvent
 
 from .aiolivisi import AioLivisi
-from .const import AVATAR_PORT
+from .const import AVATAR_PORT, IS_REACHABLE, ON_STATE
 
 
 class Websocket:
     """Represents the websocket class."""
 
-    instance = None
-
-    def __init__(self) -> None:
+    def __init__(self, aiolivisi: AioLivisi) -> None:
         """Initialize the websocket."""
-        self.aiolivisi = AioLivisi.get_instance()
+        self.aiolivisi = aiolivisi
         self.connection_url: str = None
-        self._websocket = None
-
-    @staticmethod
-    def get_instance():
-        """Static access method."""
-        if Websocket.instance is None:
-            Websocket()
-        return Websocket.instance
 
     async def connect(self, on_data, on_close, port) -> None:
         """Connect to the socket."""
@@ -44,6 +34,8 @@ class Websocket:
                 try:
                     self._websocket = websocket
                     await self.consumer_handler(websocket, on_data)
+                except ValidationError:
+                    return
                 except Exception:
                     await on_close()
                     return
@@ -57,9 +49,12 @@ class Websocket:
 
     async def consumer_handler(self, websocket, on_data: Callable):
         """Used when data is transmited using the websocket."""
-        try:
-            async for message in websocket:
-                event_data = EventData.parse_raw(message)
-                on_data(event_data)
-        except ValidationError:
-            on_data() 
+        async for message in websocket:
+            event_data = LivisiEvent.parse_raw(message)
+            if event_data.properties is None:
+                return
+            if ON_STATE in event_data.properties.keys():
+                event_data.onState = event_data.properties.get(ON_STATE)
+            if IS_REACHABLE in event_data.properties.keys():
+                event_data.isReachable = event_data.properties.get(IS_REACHABLE)
+            on_data(event_data)
