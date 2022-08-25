@@ -3,6 +3,7 @@ from typing import Callable
 import urllib.parse
 
 import websockets
+from pydantic import ValidationError
 
 from aiolivisi.event_data import EventData
 
@@ -56,6 +57,9 @@ class Websocket:
 
     async def consumer_handler(self, websocket, on_data: Callable):
         """Used when data is transmited using the websocket."""
-        async for message in websocket:
-            event_data:EventData = EventData(**message)
-            on_data(event_data)
+        try:
+            async for message in websocket:
+                event_data = EventData.parse_raw(message)
+                on_data(event_data)
+        except ValidationError:
+            on_data() 

@@ -6,6 +6,7 @@ class EventData(BaseModel):
     deviceConfigurationState: str
     deviceInclusionState: str
     firmwareVersion: str
+    onState: bool
     isReachable: bool
     updateState: str
     sequenceNumber: int

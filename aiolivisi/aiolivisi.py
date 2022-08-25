@@ -29,17 +29,6 @@ class AioLivisi:
         self._auth_headers: dict[str, Any] = auth_headers
         self._token: str = ""
         self._livisi_connection_data: dict[str, str] = None
-        if AioLivisi.instance is not None:
-            raise Exception("This class is a singleton!")
-        else:
-            AioLivisi.instance = self
-
-    @staticmethod
-    def get_instance():
-        """Static access method."""
-        if AioLivisi.instance is None:
-            AioLivisi()
-        return AioLivisi.instance
 
     async def async_set_token(
         self, livisi_connection_data: dict[str, str] = None
