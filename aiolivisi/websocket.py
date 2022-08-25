@@ -4,6 +4,8 @@ import urllib.parse
 
 import websockets
 
+from aiolivisi.event_data import EventData
+
 from .aiolivisi import AioLivisi
 from .const import AVATAR_PORT
 
@@ -55,4 +57,5 @@ class Websocket:
     async def consumer_handler(self, websocket, on_data: Callable):
         """Used when data is transmited using the websocket."""
         async for message in websocket:
-            on_data(message)
+            event_data:EventData = EventData(**message)
+            on_data(event_data)
