@@ -51,6 +51,8 @@ class Websocket:
         """Used when data is transmited using the websocket."""
         async for message in websocket:
             event_data = LivisiEvent.parse_raw(message)
+            if "device" in event_data.source:
+                event_data.source = event_data.source.replace("/device/", "")
             if event_data.properties is None:
                 return
             if ON_STATE in event_data.properties.keys():
