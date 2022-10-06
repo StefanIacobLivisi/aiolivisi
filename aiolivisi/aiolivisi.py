@@ -16,6 +16,7 @@ from .const import (
     AUTH_USERNAME,
     AUTHENTICATION_HEADERS,
     CLASSIC_PORT,
+    LOCATION,
     REQUEST_TIMEOUT,
     USERNAME,
 )
@@ -137,7 +138,11 @@ class AioLivisi:
         self,
     ) -> list[dict[str, Any]]:
         """Send a request for getting the devices."""
-        return await self.async_send_authorized_request("get", url="device")
+        devices = await self.async_send_authorized_request("get", url="device")
+        for device in devices.copy():
+            if LOCATION in device:
+                device[LOCATION] = device[LOCATION].removeprefix("/location/")
+        return devices
 
     async def async_get_pss_state(self, capability) -> dict[str, Any]:
         """Get the state of the PSS device."""

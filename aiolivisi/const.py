@@ -12,6 +12,7 @@ REQUEST_TIMEOUT: Final = 2000
 
 ON_STATE:Final = "onState"
 IS_REACHABLE:Final = "isReachable"
+LOCATION:Final = "location"
 
 AUTHENTICATION_HEADERS: Final = {
     "Authorization": "Basic Y2xpZW50SWQ6Y2xpZW50UGFzcw==",
