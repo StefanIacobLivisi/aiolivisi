@@ -9,7 +9,7 @@ MIN_PYTHON_VERSION = "3.8"
 
 setup(
     name="aiolivisi",
-    version="0.0.12",
+    version="0.0.13",
     license="Apache License 2.0",
     author="Stefan Iacob",
     author_email="stefan.iacob.extern@livisi.de",

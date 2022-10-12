@@ -140,7 +140,7 @@ class AioLivisi:
         """Send a request for getting the devices."""
         devices = await self.async_send_authorized_request("get", url="device")
         for device in devices.copy():
-            if LOCATION in device:
+            if LOCATION in device and device.get(LOCATION) is not None:
                 device[LOCATION] = device[LOCATION].removeprefix("/location/")
         return devices
 
