@@ -1,4 +1,5 @@
 """Code to handle the communication with Livisi Smart home controllers."""
+from __future__ import annotations
 from typing import Any
 import uuid
 
@@ -144,13 +145,13 @@ class AioLivisi:
                 device[LOCATION] = device[LOCATION].removeprefix("/location/")
         return devices
 
-    async def async_get_pss_state(self, capability) -> dict[str, Any]:
+    async def async_get_pss_state(self, capability) -> dict[str, Any] | None:
         """Get the state of the PSS device."""
         url = f"{capability}/state"
         try:
             return await self.async_send_authorized_request("get", url)
-        except Exception as error:
-            return
+        except Exception:
+            return None
 
     async def async_pss_set_state(self, capability_id, is_on: bool) -> dict[str, Any]:
         """Set the PSS state."""
@@ -167,7 +168,6 @@ class AioLivisi:
 
     async def async_get_all_rooms(self) -> dict[str, Any]:
         """Get all the rooms from LIVISI configuration."""
-
         return await self.async_send_authorized_request("get", "location")
 
     @property

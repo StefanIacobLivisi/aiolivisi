@@ -19,7 +19,7 @@ class Websocket:
         self.aiolivisi = aiolivisi
         self.connection_url: str = None
 
-    async def connect(self, on_data, on_close, port) -> None:
+    async def connect(self, on_data, on_close, port:int) -> None:
         """Connect to the socket."""
         if port == AVATAR_PORT:
             token = urllib.parse.quote(self.aiolivisi.token)

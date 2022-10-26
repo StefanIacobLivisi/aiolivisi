@@ -2,8 +2,8 @@
 from typing import Final
 
 
-CLASSIC_PORT: Final = "8080"
-AVATAR_PORT: Final = "9090"
+CLASSIC_PORT: Final = 8080
+AVATAR_PORT: Final = 9090
 USERNAME: Final = "admin"
 AUTH_USERNAME: Final = "username"
 AUTH_PASSWORD: Final = "password"
