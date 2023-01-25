@@ -1,4 +1,3 @@
-
 from typing import Final
 
 
@@ -10,9 +9,13 @@ AUTH_PASSWORD: Final = "password"
 AUTH_GRANT_TYPE: Final = "grant_type"
 REQUEST_TIMEOUT: Final = 2000
 
-ON_STATE:Final = "onState"
-IS_REACHABLE:Final = "isReachable"
-LOCATION:Final = "location"
+ON_STATE: Final = "onState"
+POINT_TEMPERATURE: Final = "pointTemperature"
+SET_POINT_TEMPERATURE: Final = "setpointTemperature"
+TEMPERATURE: Final = "temperature"
+HUMIDITY: Final = "humidity"
+IS_REACHABLE: Final = "isReachable"
+LOCATION: Final = "location"
 
 AUTHENTICATION_HEADERS: Final = {
     "Authorization": "Basic Y2xpZW50SWQ6Y2xpZW50UGFzcw==",

@@ -9,6 +9,7 @@ from .errors import (
     IncorrectIpAddressException,
     ShcUnreachableException,
     WrongCredentialException,
+    TokenExpiredException,
 )
 
 from .const import (
@@ -105,12 +106,12 @@ class AioLivisi:
         """Send a request to the Livisi Smart Home controller."""
         try:
             response = await self.__async_send_request(method, url, payload, headers)
+        except Exception:
+            response = await self.__async_send_request(method, url, payload, headers)
             if "errorcode" in response:
                 if response["errorcode"] == 2007:
-                    await self.async_set_token()
-            return response
-        except Exception:
-            return await self.__async_send_request(method, url, payload, headers)
+                    raise TokenExpiredException
+        return response
 
     async def __async_send_request(
         self, method, url: str, payload=None, headers=None
@@ -145,7 +146,7 @@ class AioLivisi:
                 device[LOCATION] = device[LOCATION].removeprefix("/location/")
         return devices
 
-    async def async_get_pss_state(self, capability) -> dict[str, Any] | None:
+    async def async_get_device_state(self, capability) -> dict[str, Any] | None:
         """Get the state of the PSS device."""
         url = f"{capability}/state"
         try:
@@ -161,6 +162,25 @@ class AioLivisi:
             "namespace": "core.RWE",
             "target": capability_id,
             "params": {"onState": {"type": "Constant", "value": is_on}},
+        }
+        return await self.async_send_authorized_request(
+            "post", "action", payload=set_state_payload
+        )
+
+    async def async_vrcc_set_temperature(
+        self, capability_id, target_temperature: float, is_avatar: bool
+    ) -> dict[str, Any]:
+        """Set the Virtual Climate Control state."""
+        if is_avatar:
+            params = "setpointTemperature"
+        else:
+            params = "pointTemperature"
+        set_state_payload: dict[str, Any] = {
+            "id": uuid.uuid4().hex,
+            "type": "SetState",
+            "namespace": "core.RWE",
+            "target": capability_id,
+            "params": {params: {"type": "Constant", "value": target_temperature}},
         }
         return await self.async_send_authorized_request(
             "post", "action", payload=set_state_payload

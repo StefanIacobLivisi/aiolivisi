@@ -9,6 +9,7 @@ class LivisiEvent(BaseModel):
     properties: Optional[dict]
     source: str
     onState: Optional[bool]
+    vrccData: Optional[float]
     isReachable: Optional[bool]
     sequenceNumber: Optional[str]
     type: Optional[str]

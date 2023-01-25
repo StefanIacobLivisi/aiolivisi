@@ -14,3 +14,7 @@ class WrongCredentialException(LivisiException):
 
 class IncorrectIpAddressException(LivisiException):
     """The IP address provided by the user is incorrect."""
+
+
+class TokenExpiredException(LivisiException):
+    """The authentication token is expired."""

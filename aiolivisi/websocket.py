@@ -8,7 +8,15 @@ from pydantic import ValidationError
 from aiolivisi.livisi_event import LivisiEvent
 
 from .aiolivisi import AioLivisi
-from .const import AVATAR_PORT, IS_REACHABLE, ON_STATE
+from .const import (
+    AVATAR_PORT,
+    IS_REACHABLE,
+    ON_STATE,
+    SET_POINT_TEMPERATURE,
+    POINT_TEMPERATURE,
+    HUMIDITY,
+    TEMPERATURE,
+)
 
 
 class Websocket:
@@ -19,7 +27,7 @@ class Websocket:
         self.aiolivisi = aiolivisi
         self.connection_url: str = None
 
-    async def connect(self, on_data, on_close, port:int) -> None:
+    async def connect(self, on_data, on_close, port: int) -> None:
         """Connect to the socket."""
         if port == AVATAR_PORT:
             token = urllib.parse.quote(self.aiolivisi.token)
@@ -57,6 +65,14 @@ class Websocket:
                 return
             if ON_STATE in event_data.properties.keys():
                 event_data.onState = event_data.properties.get(ON_STATE)
+            if SET_POINT_TEMPERATURE in event_data.properties.keys():
+                event_data.vrccData = event_data.properties.get(SET_POINT_TEMPERATURE)
+            elif POINT_TEMPERATURE in event_data.properties.keys():
+                event_data.vrccData = event_data.properties.get(POINT_TEMPERATURE)
+            elif TEMPERATURE in event_data.properties.keys():
+                event_data.vrccData = event_data.properties.get(TEMPERATURE)
+            elif HUMIDITY in event_data.properties.keys():
+                event_data.vrccData = event_data.properties.get(HUMIDITY)
             if IS_REACHABLE in event_data.properties.keys():
                 event_data.isReachable = event_data.properties.get(IS_REACHABLE)
             on_data(event_data)
