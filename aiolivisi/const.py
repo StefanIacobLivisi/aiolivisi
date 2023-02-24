@@ -16,6 +16,7 @@ TEMPERATURE: Final = "temperature"
 HUMIDITY: Final = "humidity"
 IS_REACHABLE: Final = "isReachable"
 LOCATION: Final = "location"
+CAPABILITY_MAP: Final = "capabilityMap"
 
 AUTHENTICATION_HEADERS: Final = {
     "Authorization": "Basic Y2xpZW50SWQ6Y2xpZW50UGFzcw==",

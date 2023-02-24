@@ -19,6 +19,7 @@ from .const import (
     AUTHENTICATION_HEADERS,
     CLASSIC_PORT,
     LOCATION,
+    CAPABILITY_MAP,
     REQUEST_TIMEOUT,
     USERNAME,
 )
@@ -141,13 +142,26 @@ class AioLivisi:
     ) -> list[dict[str, Any]]:
         """Send a request for getting the devices."""
         devices = await self.async_send_authorized_request("get", url="device")
+        capabilities = await self.async_send_authorized_request("get", url="capability")
+
+        capability_map = {}
+        for capability in capabilities:
+            device_id = capability["device"].split("/")[-1]
+            if device_id not in capability_map:
+                capability_map[device_id] = {}
+            capability_map[device_id][capability["type"]] = "/" + capability["id"]
+
+        for device in devices:
+            device_id = device["id"]
+            device[CAPABILITY_MAP] = capability_map.get(device_id, {})
+
         for device in devices.copy():
             if LOCATION in device and device.get(LOCATION) is not None:
                 device[LOCATION] = device[LOCATION].removeprefix("/location/")
         return devices
 
     async def async_get_device_state(self, capability) -> dict[str, Any] | None:
-        """Get the state of the PSS device."""
+        """Get the state of the device."""
         url = f"{capability}/state"
         try:
             return await self.async_send_authorized_request("get", url)
