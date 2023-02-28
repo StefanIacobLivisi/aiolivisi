@@ -10,6 +10,7 @@ class LivisiEvent(BaseModel):
     source: str
     onState: Optional[bool]
     vrccData: Optional[float]
+    luminance: Optional[int]
     isReachable: Optional[bool]
     sequenceNumber: Optional[str]
     type: Optional[str]

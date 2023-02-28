@@ -16,6 +16,7 @@ from .const import (
     POINT_TEMPERATURE,
     HUMIDITY,
     TEMPERATURE,
+    LUMINANCE,
 )
 
 
@@ -73,6 +74,8 @@ class Websocket:
                 event_data.vrccData = event_data.properties.get(TEMPERATURE)
             elif HUMIDITY in event_data.properties.keys():
                 event_data.vrccData = event_data.properties.get(HUMIDITY)
+            if LUMINANCE in event_data.properties.keys():
+                event_data.luminance = event_data.properties.get(LUMINANCE)
             if IS_REACHABLE in event_data.properties.keys():
                 event_data.isReachable = event_data.properties.get(IS_REACHABLE)
             on_data(event_data)
