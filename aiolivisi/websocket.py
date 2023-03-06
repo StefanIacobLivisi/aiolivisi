@@ -12,6 +12,7 @@ from .const import (
     AVATAR_PORT,
     IS_REACHABLE,
     ON_STATE,
+    IS_OPEN,
     SET_POINT_TEMPERATURE,
     POINT_TEMPERATURE,
     HUMIDITY,
@@ -78,4 +79,6 @@ class Websocket:
                 event_data.luminance = event_data.properties.get(LUMINANCE)
             if IS_REACHABLE in event_data.properties.keys():
                 event_data.isReachable = event_data.properties.get(IS_REACHABLE)
+            if IS_OPEN in event_data.properties.keys():
+                event_data.isOpen = event_data.properties.get(IS_OPEN)
             on_data(event_data)

@@ -15,3 +15,4 @@ class LivisiEvent(BaseModel):
     sequenceNumber: Optional[str]
     type: Optional[str]
     timestamp: Optional[str]
+    isOpen: Optional[bool]
