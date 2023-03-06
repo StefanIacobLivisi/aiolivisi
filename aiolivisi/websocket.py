@@ -18,7 +18,6 @@ from .const import (
     HUMIDITY,
     TEMPERATURE,
     LUMINANCE,
-    KEY_PRESS_SHORT,
     KEY_INDEX,
     KEY_PRESS_LONG,
     KEY_PRESS_TYPE,
