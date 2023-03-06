@@ -12,11 +12,17 @@ from .const import (
     AVATAR_PORT,
     IS_REACHABLE,
     ON_STATE,
+    IS_OPEN,
     SET_POINT_TEMPERATURE,
     POINT_TEMPERATURE,
     HUMIDITY,
     TEMPERATURE,
     LUMINANCE,
+    KEY_INDEX,
+    KEY_PRESS_LONG,
+    KEY_PRESS_TYPE,
+    EVENT_BUTTON_PRESSED,
+    EVENT_STATE_CHANGED,
 )
 
 
@@ -64,18 +70,30 @@ class Websocket:
                 event_data.source = event_data.source.replace("/device/", "")
             if event_data.properties is None:
                 return
-            if ON_STATE in event_data.properties.keys():
-                event_data.onState = event_data.properties.get(ON_STATE)
-            if SET_POINT_TEMPERATURE in event_data.properties.keys():
-                event_data.vrccData = event_data.properties.get(SET_POINT_TEMPERATURE)
-            elif POINT_TEMPERATURE in event_data.properties.keys():
-                event_data.vrccData = event_data.properties.get(POINT_TEMPERATURE)
-            elif TEMPERATURE in event_data.properties.keys():
-                event_data.vrccData = event_data.properties.get(TEMPERATURE)
-            elif HUMIDITY in event_data.properties.keys():
-                event_data.vrccData = event_data.properties.get(HUMIDITY)
-            if LUMINANCE in event_data.properties.keys():
-                event_data.luminance = event_data.properties.get(LUMINANCE)
-            if IS_REACHABLE in event_data.properties.keys():
-                event_data.isReachable = event_data.properties.get(IS_REACHABLE)
+
+            if event_data.type == EVENT_STATE_CHANGED:
+                if ON_STATE in event_data.properties.keys():
+                    event_data.onState = event_data.properties.get(ON_STATE)
+                if SET_POINT_TEMPERATURE in event_data.properties.keys():
+                    event_data.vrccData = event_data.properties.get(
+                        SET_POINT_TEMPERATURE
+                    )
+                elif POINT_TEMPERATURE in event_data.properties.keys():
+                    event_data.vrccData = event_data.properties.get(POINT_TEMPERATURE)
+                elif TEMPERATURE in event_data.properties.keys():
+                    event_data.vrccData = event_data.properties.get(TEMPERATURE)
+                elif HUMIDITY in event_data.properties.keys():
+                    event_data.vrccData = event_data.properties.get(HUMIDITY)
+                if LUMINANCE in event_data.properties.keys():
+                    event_data.luminance = event_data.properties.get(LUMINANCE)
+                if IS_REACHABLE in event_data.properties.keys():
+                    event_data.isReachable = event_data.properties.get(IS_REACHABLE)
+                if IS_OPEN in event_data.properties.keys():
+                    event_data.isOpen = event_data.properties.get(IS_OPEN)
+            elif event_data.type == EVENT_BUTTON_PRESSED:
+                if KEY_INDEX in event_data.properties.keys():
+                    event_data.keyIndex = event_data.properties.get(KEY_INDEX)
+                    event_data.isLongKeyPress = (
+                        KEY_PRESS_LONG == event_data.properties.get(KEY_PRESS_TYPE)
+                    )
             on_data(event_data)

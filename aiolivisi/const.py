@@ -16,8 +16,21 @@ TEMPERATURE: Final = "temperature"
 HUMIDITY: Final = "humidity"
 LUMINANCE: Final = "luminance"
 IS_REACHABLE: Final = "isReachable"
+IS_OPEN: Final = "isOpen"
 LOCATION: Final = "location"
+
+KEY_INDEX: Final = "index"
+KEY_PRESS_TYPE: Final = "type"
+KEY_PRESS_SHORT: Final = "ShortPress"
+KEY_PRESS_LONG: Final = "LongPress"
+
+
 CAPABILITY_MAP: Final = "capabilityMap"
+CAPABILITY_CONFIG: Final = "capabilityConfig"
+
+EVENT_STATE_CHANGED = "StateChanged"
+EVENT_BUTTON_PRESSED = "ButtonPressed"
+EVENT_MOTION_DETECTED = "MotionDetected"
 
 AUTHENTICATION_HEADERS: Final = {
     "Authorization": "Basic Y2xpZW50SWQ6Y2xpZW50UGFzcw==",
