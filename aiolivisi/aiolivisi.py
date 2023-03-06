@@ -152,10 +152,12 @@ class AioLivisi:
             device_id = capability["device"].split("/")[-1]
             if device_id not in capability_map:
                 capability_map[device_id] = {}
+                capability_config[device_id] = {}
             capability_map[device_id][capability["type"]] = (
                 "/capability/" + capability["id"]
             )
-            capability_config[device_id][capability["type"]] = capability["config"]
+            if "config" in capability:
+                capability_config[device_id][capability["type"]] = capability["config"]
 
         for device in devices:
             device_id = device["id"]
