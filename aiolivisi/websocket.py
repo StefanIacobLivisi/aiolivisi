@@ -97,8 +97,4 @@ class Websocket:
                     event_data.isLongKeyPress = (
                         KEY_PRESS_LONG == event_data.properties.get(KEY_PRESS_TYPE)
                     )
-                    event_data.isShortKeyPress = (
-                        KEY_PRESS_SHORT == event_data.properties.get(KEY_PRESS_TYPE)
-                    )
-
             on_data(event_data)

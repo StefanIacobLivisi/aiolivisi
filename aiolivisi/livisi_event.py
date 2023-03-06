@@ -16,3 +16,5 @@ class LivisiEvent(BaseModel):
     type: Optional[str]
     timestamp: Optional[str]
     isOpen: Optional[bool]
+    keyIndex: Optional[int]
+    isLongKeyPress: Optional[bool]
