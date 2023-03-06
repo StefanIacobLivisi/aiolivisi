@@ -20,6 +20,7 @@ from .const import (
     CLASSIC_PORT,
     LOCATION,
     CAPABILITY_MAP,
+    CAPABILITY_CONFIG,
     REQUEST_TIMEOUT,
     USERNAME,
 )
@@ -145,6 +146,8 @@ class AioLivisi:
         capabilities = await self.async_send_authorized_request("get", url="capability")
 
         capability_map = {}
+        capability_config = {}
+
         for capability in capabilities:
             device_id = capability["device"].split("/")[-1]
             if device_id not in capability_map:
@@ -152,10 +155,12 @@ class AioLivisi:
             capability_map[device_id][capability["type"]] = (
                 "/capability/" + capability["id"]
             )
+            capability_config[device_id][capability["type"]] = capability["config"]
 
         for device in devices:
             device_id = device["id"]
             device[CAPABILITY_MAP] = capability_map.get(device_id, {})
+            device[CAPABILITY_CONFIG] = capability_config.get(device_id, {})
 
         for device in devices.copy():
             if LOCATION in device and device.get(LOCATION) is not None:
