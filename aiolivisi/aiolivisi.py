@@ -190,6 +190,21 @@ class AioLivisi:
             "post", "action", payload=set_state_payload
         )
 
+    async def async_variable_set_value(
+        self, capability_id, value: bool
+    ) -> dict[str, Any]:
+        """Set the boolean variable state."""
+        set_value_payload: dict[str, Any] = {
+            "id": uuid.uuid4().hex,
+            "type": "SetState",
+            "namespace": "core.RWE",
+            "target": capability_id,
+            "params": {"value": {"type": "Constant", "value": value}},
+        }
+        return await self.async_send_authorized_request(
+            "post", "action", payload=set_value_payload
+        )
+
     async def async_vrcc_set_temperature(
         self, capability_id, target_temperature: float, is_avatar: bool
     ) -> dict[str, Any]:

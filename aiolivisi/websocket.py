@@ -12,6 +12,7 @@ from .const import (
     AVATAR_PORT,
     IS_REACHABLE,
     ON_STATE,
+    VALUE,
     IS_OPEN,
     SET_POINT_TEMPERATURE,
     POINT_TEMPERATURE,
@@ -66,6 +67,7 @@ class Websocket:
         """Used when data is transmited using the websocket."""
         async for message in websocket:
             event_data = LivisiEvent.parse_raw(message)
+
             if "device" in event_data.source:
                 event_data.source = event_data.source.replace("/device/", "")
             if event_data.properties is None:
@@ -74,6 +76,8 @@ class Websocket:
             if event_data.type == EVENT_STATE_CHANGED:
                 if ON_STATE in event_data.properties.keys():
                     event_data.onState = event_data.properties.get(ON_STATE)
+                elif VALUE in event_data.properties.keys():
+                    event_data.onState = event_data.properties.get(VALUE)
                 if SET_POINT_TEMPERATURE in event_data.properties.keys():
                     event_data.vrccData = event_data.properties.get(
                         SET_POINT_TEMPERATURE
