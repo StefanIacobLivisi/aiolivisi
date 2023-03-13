@@ -76,7 +76,9 @@ class Websocket:
             if event_data.type == EVENT_STATE_CHANGED:
                 if ON_STATE in event_data.properties.keys():
                     event_data.onState = event_data.properties.get(ON_STATE)
-                elif VALUE in event_data.properties.keys():
+                elif VALUE in event_data.properties.keys() and isinstance(
+                    event_data.properties.get(VALUE), bool
+                ):
                     event_data.onState = event_data.properties.get(VALUE)
                 if SET_POINT_TEMPERATURE in event_data.properties.keys():
                     event_data.vrccData = event_data.properties.get(
