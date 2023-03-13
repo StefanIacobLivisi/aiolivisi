@@ -238,25 +238,6 @@ class AioLivisi:
             "post", "action", payload=set_state_payload
         )
 
-    async def async_alarm_set_state(self, capability_id, is_on: bool) -> dict[str, Any]:
-        """Set the alert state."""
-
-        if is_on:
-            value = "Alarm"
-        else:
-            value = "None"
-
-        set_state_payload: dict[str, Any] = {
-            "id": uuid.uuid4().hex,
-            "type": "SetState",
-            "namespace": "core.RWE",
-            "target": capability_id,
-            "params": {"activeChannel": {"type": "Constant", "value": value}},
-        }
-        return await self.async_send_authorized_request(
-            "post", "action", payload=set_state_payload
-        )
-
     async def async_get_all_rooms(self) -> dict[str, Any]:
         """Get all the rooms from LIVISI configuration."""
         return await self.async_send_authorized_request("get", "location")
