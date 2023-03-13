@@ -191,6 +191,19 @@ class AioLivisi:
             "post", "action", payload=set_state_payload
         )
 
+    async def async_set_onstate(self, capability_id, is_on: bool) -> dict[str, Any]:
+        """Set the onState for devices that support it."""
+        set_state_payload: dict[str, Any] = {
+            "id": uuid.uuid4().hex,
+            "type": "SetState",
+            "namespace": "core.RWE",
+            "target": capability_id,
+            "params": {"onState": {"type": "Constant", "value": is_on}},
+        }
+        return await self.async_send_authorized_request(
+            "post", "action", payload=set_state_payload
+        )
+
     async def async_variable_set_value(
         self, capability_id, value: bool
     ) -> dict[str, Any]:
@@ -220,6 +233,25 @@ class AioLivisi:
             "namespace": "core.RWE",
             "target": capability_id,
             "params": {params: {"type": "Constant", "value": target_temperature}},
+        }
+        return await self.async_send_authorized_request(
+            "post", "action", payload=set_state_payload
+        )
+
+    async def async_alarm_set_state(self, capability_id, is_on: bool) -> dict[str, Any]:
+        """Set the alert state."""
+
+        if is_on:
+            value = "Alarm"
+        else:
+            value = "None"
+
+        set_state_payload: dict[str, Any] = {
+            "id": uuid.uuid4().hex,
+            "type": "SetState",
+            "namespace": "core.RWE",
+            "target": capability_id,
+            "params": {"activeChannel": {"type": "Constant", "value": value}},
         }
         return await self.async_send_authorized_request(
             "post", "action", payload=set_state_payload
