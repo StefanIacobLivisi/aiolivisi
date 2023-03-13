@@ -50,8 +50,6 @@ class Websocket:
                 try:
                     self._websocket = websocket
                     await self.consumer_handler(websocket, on_data)
-                except ValidationError:
-                    return
                 except Exception:
                     await on_close()
                     return
@@ -66,12 +64,15 @@ class Websocket:
     async def consumer_handler(self, websocket, on_data: Callable):
         """Used when data is transmited using the websocket."""
         async for message in websocket:
-            event_data = LivisiEvent.parse_raw(message)
+            try:
+                event_data = LivisiEvent.parse_raw(message)
+            except ValidationError:
+                continue
 
             if "device" in event_data.source:
                 event_data.source = event_data.source.replace("/device/", "")
             if event_data.properties is None:
-                return
+                continue
 
             if event_data.type == EVENT_STATE_CHANGED:
                 if ON_STATE in event_data.properties.keys():
