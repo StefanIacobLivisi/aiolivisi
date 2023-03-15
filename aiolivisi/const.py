@@ -10,6 +10,7 @@ AUTH_GRANT_TYPE: Final = "grant_type"
 REQUEST_TIMEOUT: Final = 2000
 
 ON_STATE: Final = "onState"
+VALUE: Final = "value"
 POINT_TEMPERATURE: Final = "pointTemperature"
 SET_POINT_TEMPERATURE: Final = "setpointTemperature"
 TEMPERATURE: Final = "temperature"
