@@ -10,6 +10,7 @@ from .errors import (
     ShcUnreachableException,
     WrongCredentialException,
     TokenExpiredException,
+    ErrorCodeException,
 )
 
 from .const import (
@@ -47,9 +48,9 @@ class AioLivisi:
         """Set the JWT from the LIVISI Smart Home Controller."""
         access_data: dict = {}
         try:
-            if self._livisi_connection_data is not None:
+            if livisi_connection_data is not None:
                 self._livisi_connection_data = livisi_connection_data
-            access_data = await self.async_get_jwt_token(livisi_connection_data)
+            access_data = await self.async_get_jwt_token(self._livisi_connection_data)
             self.token = access_data["access_token"]
             self._auth_headers = {
                 "authorization": f"Bearer {self.token}",
@@ -105,14 +106,16 @@ class AioLivisi:
     async def async_send_request(
         self, method, url: str, payload=None, headers=None
     ) -> dict:
-        """Send a request to the Livisi Smart Home controller."""
-        try:
-            response = await self.__async_send_request(method, url, payload, headers)
-        except Exception:
-            response = await self.__async_send_request(method, url, payload, headers)
-            if "errorcode" in response:
-                if response["errorcode"] == 2007:
-                    raise TokenExpiredException
+        """Send a request to the Livisi Smart Home controller and handle requesting new token."""
+        response = await self.__async_send_request(method, url, payload, headers)
+        if "errorcode" in response:
+            if response["errorcode"] == 2007:
+                await self.async_set_token()
+                response = await self.__async_send_request(
+                    method, url, payload, headers
+                )
+            else:
+                raise ErrorCodeException(response["errorcode"])
         return response
 
     async def __async_send_request(
