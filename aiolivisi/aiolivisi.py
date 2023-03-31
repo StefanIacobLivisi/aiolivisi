@@ -18,6 +18,7 @@ from .const import (
     AUTH_PASSWORD,
     AUTH_USERNAME,
     AUTHENTICATION_HEADERS,
+    BATTERY_LOW,
     CLASSIC_PORT,
     LOCATION,
     CAPABILITY_MAP,
@@ -147,6 +148,7 @@ class AioLivisi:
         """Send a request for getting the devices."""
         devices = await self.async_send_authorized_request("get", url="device")
         capabilities = await self.async_send_authorized_request("get", url="capability")
+        messages = await self.async_send_authorized_request("get", url="message")
 
         capability_map = {}
         capability_config = {}
@@ -163,14 +165,21 @@ class AioLivisi:
             if "config" in capability:
                 capability_config[device_id][capability["type"]] = capability["config"]
 
+        low_battery_devices = set()
+        for message in messages:
+            if message.get("type") == "DeviceLowBattery":
+                for device_id in message.get("devices", {}):
+                    low_battery_devices.add(device_id)
+
         for device in devices:
             device_id = device["id"]
             device[CAPABILITY_MAP] = capability_map.get(device_id, {})
             device[CAPABILITY_CONFIG] = capability_config.get(device_id, {})
-
-        for device in devices.copy():
+            if device_id in low_battery_devices:
+                device[BATTERY_LOW] = True
             if LOCATION in device and device.get(LOCATION) is not None:
                 device[LOCATION] = device[LOCATION].removeprefix("/location/")
+
         return devices
 
     async def async_get_device_state(self, capability) -> dict[str, Any] | None:

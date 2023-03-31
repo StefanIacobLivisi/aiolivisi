@@ -28,6 +28,7 @@ KEY_PRESS_LONG: Final = "LongPress"
 
 CAPABILITY_MAP: Final = "capabilityMap"
 CAPABILITY_CONFIG: Final = "capabilityConfig"
+BATTERY_LOW: Final = "batteryLow"
 
 EVENT_STATE_CHANGED = "StateChanged"
 EVENT_BUTTON_PRESSED = "ButtonPressed"
