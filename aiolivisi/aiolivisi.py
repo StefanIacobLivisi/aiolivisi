@@ -162,8 +162,10 @@ class AioLivisi:
                 capability_map[device_id][capability["type"]] = (
                     "/capability/" + capability["id"]
                 )
-            if "config" in capability:
-                capability_config[device_id][capability["type"]] = capability["config"]
+                if "config" in capability:
+                    capability_config[device_id][capability["type"]] = capability[
+                        "config"
+                    ]
 
         low_battery_devices = set()
         for message in messages:
