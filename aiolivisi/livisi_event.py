@@ -1,8 +1,5 @@
 from dataclasses import dataclass
-try:
-    from pydantic import BaseModel
-except ImportError:
-    from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 from typing import Optional
 
 
