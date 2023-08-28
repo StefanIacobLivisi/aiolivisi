@@ -4,9 +4,9 @@ import urllib.parse
 
 import websockets
 try:
-    from pydantic import ValidationError
-except ImportError:
     from pydantic.v1 import ValidationError
+except ImportError:
+    from pydantic import ValidationError
 
 from aiolivisi.livisi_event import LivisiEvent
 
