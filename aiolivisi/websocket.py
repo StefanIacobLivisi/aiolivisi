@@ -3,7 +3,10 @@ from typing import Callable
 import urllib.parse
 
 import websockets
-from pydantic import ValidationError
+try:
+    from pydantic.v1 import ValidationError
+except ImportError:
+    from pydantic import ValidationError
 
 from aiolivisi.livisi_event import LivisiEvent
 
